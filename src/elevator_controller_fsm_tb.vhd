@@ -74,7 +74,7 @@ architecture test_bench of elevator_controller_fsm_tb is
 begin
 	-- PORT MAPS ----------------------------------------
 
-	uut_inst : elevator_controller_fsm port map (
+	uut: elevator_controller_fsm port map (
 		i_clk     => w_clk,
 		i_reset   => w_reset,
 		i_stop    => w_stop,
