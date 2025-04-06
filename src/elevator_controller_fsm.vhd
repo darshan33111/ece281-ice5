@@ -11,7 +11,7 @@
 --| ---------------------------------------------------------------------------
 --|
 --| FILENAME      : MooreElevatorController.vhd
---| AUTHOR(S)     : Capt Phillip Warner, Capt Dan Johnson, Capt Brian Yarbrough, ***YourName***
+--| AUTHOR(S)     : Capt Phillip Warner, Capt Dan Johnson, Capt Brian Yarbrough, ***C3C Darshan Kiran Koushik***
 --| CREATED       : 03/2018 Last Modified on 06/24/2020
 --| DESCRIPTION   : This file implements the ICE5 Basic elevator controller (Moore Machine)
 --|
@@ -95,21 +95,44 @@ begin
 	-- CONCURRENT STATEMENTS ------------------------------------------------------------------------------
 	
 	-- Next State Logic
+                -- going up
+    f_Q_next <= s_floor2 when (i_up_down = '1' and f_Q = s_floor1) else
+                s_floor3 when (i_up_down = '1' and f_Q = s_floor2) else 
+                s_floor4 when (i_up_down = '1' and (f_Q = s_floor3 or f_Q = s_floor4)) else 
+             -- going down
+                s_floor3 when (i_up_down = '0' and f_Q = s_floor4) else 
+                s_floor2 when (i_up_down = '0' and f_Q = s_floor3) else 
+                s_floor1 when (i_up_down = '0' and (f_Q = s_floor2 or f_Q = s_floor1)) else 
+                s_floor2; -- default case
   
 	-- Output logic
+    with f_Q select
+        o_floor <= "0001" when s_floor1,
+                   "0010" when s_floor2, 
+                   "0011" when s_floor3, 
+                   "0100" when s_floor4,
+            "0001" when others; -- default is floor1
+	
 
 	-------------------------------------------------------------------------------------------------------
 	
 	-- PROCESSES ------------------------------------------------------------------------------------------	
 	
 	-- State register ------------
+	register_proc : process (i_clk, i_reset)
+    begin
+        if rising_edge(i_clk) then 
+            if i_reset = '1' then
+                f_Q <= s_floor2;        -- reset state is floor 2
+            elsif i_stop = '0' then
+                f_Q <= f_Q_next;    -- next state becomes current state
+            end if; 
+        end if;
+    end process register_proc;	
 	
 	
 	-------------------------------------------------------------------------------------------------------
 	
-	
-
-
 
 end Behavioral;
 
